@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Life Game</title>
+</head>
+<style type="text/css">
+	.cell{
+		cursor: pointer;
+		width: 20px;
+		color: #fff;
+	}
+	.active{
+		background-color: blue;
+		color: blue;
+	}
+</style>
+<body>
+	<h1>Please put your world dimensions</h1>
+	<form action="">
+	  Rows: <input type="number" class="rows"><br>
+	  Columns: <input type="number" class="columns"><br>
+  	<input type="submit" value="Create World" onclick="return createWorld()">
+	</form>
+	<div class="map"></div>
+<script language="JavaScript">
+
+
+
+
+
+///////////////////////////////// YOU DONT NEED JQUERY //////////////////////////////////
+
+function createWorld(){ 
+	var rows = document.querySelector(".rows").value 
+	var columns = document.querySelector(".columns").value 
+	createTable(rows,columns)
+	printTable(array)
+  return false //PreventDefault
+};
+
+function createTable(rows,columns){ 
+	eval("array = new Array("+columns+")")	// Create primary matrix
+	eval("dup_array = new Array("+columns+")")	// Create secundary matrix
+	for (var j = 0; j <= columns - 1; j++){		
+		eval("array" + j +" = new Array("+rows+")") 	//Create primary arrays
+		eval("dup_array" + j +" = new Array("+rows+")") 	//Create secundary arrays
+		for (var i = 0; i <= rows - 1; i++) {
+			eval("array" + j + "[" + i + "] = 0")  //Fill primary arrays
+			eval("dup_array" + j + "[" + i + "] = 0")  //Fill secundary arrays
+		};
+	eval("array["+j+"]= array"+j)	//Fill primary matrix
+	eval("dup_array["+j+"]= dup_array"+j)	//Fill primary matrix
+	};
+};
+
+function printTable(matrix){	//Print table
+	var html = "<table border=1 cellpadding=1 cellspacing=1>" 
+	for (var j = 0; j <= matrix.length - 1; j++){		
+		html += "<tr>"
+		for (var i = 0; i <= matrix[0].length - 1; i++) {
+			if (matrix[j][i] == 0) {
+				html += "<td  onclick='return statusCell("+j+","+i+")' id='c"+j+"-"+i+"' class='cell ' >" + matrix[j][i] + "</td>" 
+			}else if(matrix[j][i] == 1){
+				html += "<td  onclick='return statusCell("+j+","+i+")' id='c"+j+"-"+i+"' class='cell active' >" + matrix[j][i] + "</td>"
+			};
+		};
+		html += "</tr>"
+	};
+	html += "</table>"
+	html += "<button  onclick='return checkMatrix(array,dup_array)' class='start-game'>Play God</button>"
+	document.querySelector(".map").innerHTML = html
+};
+
+function statusCell(x,y){
+	//var id = "#c"+x+"-"+y+""
+	//var position = document.querySelector(id)
+	if (array[x][y] == 0){
+		array[x][y] = 1	// Active cell
+		//position.classList.add("active") //Add color
+	}else if(array[x][y] == 1){
+		array[x][y] = 0	//Inactive cell
+		//position.classList.remove("active")	//Quit color
+	}
+	printTable(array)
+	return false //PreventDefault
+};
+
+function checkMatrix(matrix1,matrix2){
+	for (var j = 0; j <= matrix1.length - 1; j++){		
+		for (var i = 0; i <= matrix1[0].length - 1; i++) {	
+			if (checkNeighbours(matrix1,j,i) == 3){
+				matrix2[j][i] = 1
+			};
+			if (checkNeighbours(matrix1,j,i) > 3){
+				matrix2[j][i] = 0
+			};
+			if (checkNeighbours(matrix1,j,i) < 2){
+				matrix2[j][i] = 0
+			};
+		};
+	};
+	printTable(matrix2)
+	return false //PreventDefault
+};
+
+function checkNeighbours(matrix,j,i){
+	var points = 0 //Count neighbours
+	//Arriba,Arriba-Izq,Arriba-Der
+	if (j-1 >= 0){ // Arriba
+		var x = j-1
+		var y = i
+		if(matrix[x][y] == 1){
+			points += 1 
+		};
+		if(y-1 >= 0){	// Arriba-Izq
+			if(matrix[x][y-1] == 1){
+				points += 1
+			} ;
+		};
+		if(y+1 >= 0){	// Arriba-Der
+			if(matrix[x][y+1] == 1){
+				points += 1
+			};
+		};
+	};
+	//Abajo,Abajo-Izq,Abajo-Der
+	if (j+1 < matrix.length){ // Abajo
+		var x = j+1
+		var y = i
+		if(matrix[x][y] == 1){
+			points += 1 
+		};
+		if(y-1 >= 0){	// Abajo-Izq
+			if(matrix[x][y-1] == 1){
+				points += 1
+			}; 
+		};
+		if(y+1 >= 0){	// Abajo-Der
+			if(matrix[x][y+1] == 1){
+				points += 1
+			}; 
+		};
+	};
+	//Izquierda
+	if(i-1 >= 0){
+		var x = j
+		var y = i-1
+		if(matrix[x][y] == 1){
+			points +=1
+		};
+	};
+	//Derecha
+	if(i+1 < matrix[0].length){
+		var x = j
+		var y = i+1
+		if(matrix[x][y] == 1){
+			points +=1
+		};
+	};
+	return points
+};
+		
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+</script>
+
+
+
+</body>
+</html>
